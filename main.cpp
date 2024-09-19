@@ -1,132 +1,106 @@
 #include <iostream>
 #include <string>
 
-class Book {
-    private:
-        std::string title;
-        std::string author;
-        int isbn;
-
-public:
-    Book() : title(""), author(""), isbn(0) {}
-
-    Book(std::string title, std::string author, int isbn) {
-        this->title = title;
-        this->author = author;
-        this->isbn = isbn;
-    }
-
-    void showBook() const {
-        std::cout << "Title: " << title << "; Author: " << author << ", ISBN: " << isbn << std::endl;
-    }
-
-    int getISBN() const {
-        return isbn;
-    }
-};
-
-class Library {
+class Person {
 private:
-    static const int maxBooks = 50;
-    Book books[maxBooks];
-    int numBooks;
+    std::string name;
+    int age;
 
 public:
-    Library() {
-        numBooks = 0;
-    }
+    Person(std::string name, int age) : name(name), age(age) {}
 
-    void addBook(const Book& book) {
-        if (numBooks < maxBooks) {
-            books[numBooks] = book;
-            numBooks++;
-            std::cout << "The book has been added.\n";
-        } else {
-            std::cout << "The library is full.\n";
-        }
-    }
+    void setName(std::string name) { this->name = name; }
+    void setAge(int age) { this->age = age; }
 
-    void removeBook(int isbn) {
-        for (int i = 0; i < numBooks; ++i) {
-            if (books[i].getISBN() == isbn) {
-                for (int j = i; j < numBooks - 1; ++j) {
-                    books[j] = books[j + 1];
-                }
-                numBooks--;
-                std::cout << "Book with ISBN: " << isbn << " removed.\n";
-                return;
-            }
-        }
-        std::cout << "Book with ISBN:  " << isbn << " not found.\n";
-    }
+    std::string getName() const { return name; }
+    int getAge() const { return age; }
 
-    void showBooks() const {
-        if (numBooks == 0) {
-            std::cout << "The library is empty.\n";
-        } else {
-            for (int i = 0; i < numBooks; ++i) {
-                books[i].showBook();
-            }
-        }
+    void showInfo() const {
+        std::cout << "Name: " << name << ", Age: " << age << std::endl;
     }
 };
 
-void showMenu() {
-    std::cout << "\nMenu:\n";
-    std::cout << "1. Add a book\n";
-    std::cout << "2. Remove a book by ISBN\n";
-    std::cout << "3. Show all books\n";
-    std::cout << "4. Exit\n";
-    std::cout << "Choose an option: ";
-}
+class Animal {
+protected:
+    std::string name;
+
+public:
+    Animal(std::string name) : name(name) {
+        std::cout << "Animal constructor called.\n";
+    }
+
+    virtual ~Animal() {
+        std::cout << "Animal destructor called.\n";
+    }
+
+    void speak() const {
+        std::cout << name << " is making a sound." << std::endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    Dog(std::string name) : Animal(name) {
+        std::cout << "Dog constructor called.\n";
+    }
+
+    ~Dog() {
+        std::cout << "Dog destructor called.\n";
+    }
+
+    void bark() const {
+        std::cout << name << " is barking." << std::endl;
+    }
+};
+
+class ClassB;
+
+class ClassA {
+private:
+    int valueA;
+
+public:
+    ClassA(int val) : valueA(val) {}
+
+    friend class ClassB;
+};
+
+class ClassB {
+private:
+    int valueB;
+
+public:
+    ClassB(int val) : valueB(val) {}
+
+    void showValues(const ClassA& objA) {
+        std::cout << "Value from ClassA: " << objA.valueA << std::endl;
+        std::cout << "Value from ClassB: " << valueB << std::endl;
+    }
+};
 
 int main() {
-    Library library;
-    int option;
+    // Ex. 1
+    std::cout << "Encapsulation Example:\n";
+    Person person("John", 30);
+    person.showInfo();
 
-    do {
-        showMenu();
-        std::cin >> option;
+    person.setName("Maria");
+    person.setAge(25);
+    person.showInfo();
+    std::cout << std::endl;
 
-        switch (option) {
-            case 1: {
-                std::string title, author;
-                int isbn;
-                std::cout << "Enter book title: ";
-                std::cin.ignore();
-                std::getline(std::cin, title);
-                std::cout << "Enter author name: ";
-                std::getline(std::cin, author);
-                std::cout << "Enter ISBN number: ";
-                std::cin >> isbn;
+    // Ex. 2 si 3
+    std::cout << "Inheritance Example:\n";
+    Dog dog("Bob");
+    dog.speak();
+    dog.bark();
+    std::cout << std::endl;
 
-                Book newBook(title, author, isbn);
-                library.addBook(newBook);
-                break;
-            }
-            case 2: {
-                int isbn;
-                std::cout << "Enter ISBN of the book to remove: ";
-                std::cin >> isbn;
-                library.removeBook(isbn);
-                break;
-            }
-            case 3: {
-                std::cout << "Books in the library:\n";
-                library.showBooks();
-                break;
-            }
-            case 4: {
-                std::cout << "Exiting the program.\n";
-                break;
-            }
-            default: {
-                std::cout << "Invalid option, please try again.\n";
-                break;
-            }
-        }
-
-    } while (option != 4);
+    // Ex. 4
+    std::cout << "Friend Example:\n";
+    ClassA objA(10);
+    ClassB objB(20);
+    objB.showValues(objA);
 
     return 0;
 }
